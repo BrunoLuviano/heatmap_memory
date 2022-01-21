@@ -1,0 +1,230 @@
+#Los datos de este script constan de 3 experimentos
+#cada experimento son curvas de crecimiento ante ambientes fluctuantes
+#el plato a estuvo expuesto en dos ocasiones a ampicilina
+#el plato b es el control que no es expuesto al estrés
+#el plato c es expuesto una unica vez a ampicilina
+#se usa la concentracion de 2.5 y 5 ug/ml AMP, respectivamente
+
+#cargar librerias
+library(ggplot2)
+library(reshape2)
+library(here)
+library(wesanderson)
+library(ggpubr)
+library(tidyverse)
+library(RColorBrewer)
+#library(scales)
+
+#cargar los archivos
+strains<-read.csv(here("data","Cepario.csv"))
+
+OD_plate_a_1<-read.csv(here("data","111121_plate_a_1_OD.csv"))
+GFP_plate_a_1<-read.csv(here("data","111121_plate_a_1_GFP.csv"))
+
+OD_plate_a_2<-read.csv(here("data","111121_plate_a_2_OD.csv"))
+GFP_plate_a_2<-read.csv(here("data","111121_plate_a_2_GFP.csv"))
+
+OD_plate_a_3<-read.csv(here("data","111121_plate_a_3_OD.csv"))
+GFP_plate_a_3<-read.csv(here("data","111121_plate_a_3_GFP.csv"))
+
+OD_plate_a_4<-read.csv(here("data","111121_plate_a_4_OD.csv"))
+GFP_plate_a_4<-read.csv(here("data","111121_plate_a_4_GFP.csv"))
+
+OD_plate_a_5<-read.csv(here("data","111121_plate_a_5_OD.csv"))
+GFP_plate_a_5<-read.csv(here("data","111121_plate_a_5_GFP.csv"))
+
+OD_plate_b_1<-read.csv(here("data","111121_plate_b_1_OD.csv"))
+GFP_plate_b_1<-read.csv(here("data","111121_plate_b_1_GFP.csv"))
+
+OD_plate_b_2<-read.csv(here("data","111121_plate_b_2_OD.csv"))
+GFP_plate_b_2<-read.csv(here("data","111121_plate_b_2_GFP.csv"))
+
+OD_plate_b_3<-read.csv(here("data","111121_plate_b_3_OD.csv"))
+GFP_plate_b_3<-read.csv(here("data","111121_plate_b_3_GFP.csv"))
+
+OD_plate_b_4<-read.csv(here("data","111121_plate_b_4_OD.csv"))
+GFP_plate_b_4<-read.csv(here("data","111121_plate_b_4_GFP.csv"))
+
+OD_plate_b_5<-read.csv(here("data","111121_plate_b_5_OD.csv"))
+GFP_plate_b_5<-read.csv(here("data","111121_plate_b_5_GFP.csv"))
+
+OD_plate_c_1<-read.csv(here("data","111121_plate_c_1_OD.csv"))
+GFP_plate_c_1<-read.csv(here("data","111121_plate_c_1_GFP.csv"))
+
+OD_plate_c_2<-read.csv(here("data","111121_plate_c_2_OD.csv"))
+GFP_plate_c_2<-read.csv(here("data","111121_plate_c_2_GFP.csv"))
+
+OD_plate_c_3<-read.csv(here("data","111121_plate_c_3_OD.csv"))
+GFP_plate_c_3<-read.csv(here("data","111121_plate_c_3_GFP.csv"))
+
+OD_plate_c_4<-read.csv(here("data","111121_plate_c_4_OD.csv"))
+GFP_plate_c_4<-read.csv(here("data","111121_plate_c_4_GFP.csv"))
+
+OD_plate_c_5<-read.csv(here("data","111121_plate_c_5_OD.csv"))
+GFP_plate_c_5<-read.csv(here("data","111121_plate_c_5_GFP.csv"))
+
+
+#adicionar el tiempo
+Time<-read.csv(here("data","Time.csv"))
+
+#eliminar el tiempo, temperatura y controles
+OD_plate_a_1<-as.matrix(OD_plate_a_1[,-c(1,2)])
+OD_plate_a_2<-as.matrix(OD_plate_a_2[,-c(1,2)])
+OD_plate_a_3<-as.matrix(OD_plate_a_3[,-c(1,2)])
+OD_plate_a_4<-as.matrix(OD_plate_a_4[,-c(1,2)])
+OD_plate_a_5<-as.matrix(OD_plate_a_5[,-c(1,2)])
+
+OD_plate_b_1<-as.matrix(OD_plate_b_1[,-c(1,2)])
+OD_plate_b_2<-as.matrix(OD_plate_b_2[,-c(1,2)])
+OD_plate_b_3<-as.matrix(OD_plate_b_3[,-c(1,2)])
+OD_plate_b_4<-as.matrix(OD_plate_b_4[,-c(1,2)])
+OD_plate_b_5<-as.matrix(OD_plate_b_5[,-c(1,2)])
+
+OD_plate_c_1<-as.matrix(OD_plate_c_1[,-c(1,2)])
+OD_plate_c_2<-as.matrix(OD_plate_c_2[,-c(1,2)])
+OD_plate_c_3<-as.matrix(OD_plate_c_3[,-c(1,2)])
+OD_plate_c_4<-as.matrix(OD_plate_c_4[,-c(1,2)])
+OD_plate_c_5<-as.matrix(OD_plate_c_5[,-c(1,2)])
+
+GFP_plate_a_1<-as.matrix(GFP_plate_a_1[,-c(1,2)])
+GFP_plate_a_2<-as.matrix(GFP_plate_a_2[,-c(1,2)])
+GFP_plate_a_3<-as.matrix(GFP_plate_a_3[,-c(1,2)])
+GFP_plate_a_4<-as.matrix(GFP_plate_a_4[,-c(1,2)])
+GFP_plate_a_5<-as.matrix(GFP_plate_a_5[,-c(1,2)])
+
+GFP_plate_b_1<-as.matrix(GFP_plate_b_1[,-c(1,2)])
+GFP_plate_b_2<-as.matrix(GFP_plate_b_2[,-c(1,2)])
+GFP_plate_b_3<-as.matrix(GFP_plate_b_3[,-c(1,2)])
+GFP_plate_b_4<-as.matrix(GFP_plate_b_4[,-c(1,2)])
+GFP_plate_b_5<-as.matrix(GFP_plate_b_5[,-c(1,2)])
+
+GFP_plate_c_1<-as.matrix(GFP_plate_c_1[,-c(1,2)])
+GFP_plate_c_2<-as.matrix(GFP_plate_c_2[,-c(1,2)])
+GFP_plate_c_3<-as.matrix(GFP_plate_c_3[,-c(1,2)])
+GFP_plate_c_4<-as.matrix(GFP_plate_c_4[,-c(1,2)])
+GFP_plate_c_5<-as.matrix(GFP_plate_c_5[,-c(1,2)])
+
+#calcular GFP/OD
+plate_a_1<-GFP_plate_a_1/OD_plate_a_1
+plate_a_2<-GFP_plate_a_2/OD_plate_a_2
+plate_a_3<-GFP_plate_a_3/OD_plate_a_3
+plate_a_4<-GFP_plate_a_4/OD_plate_a_4
+plate_a_5<-GFP_plate_a_5/OD_plate_a_5
+
+plate_b_1<-GFP_plate_b_1/OD_plate_b_1
+plate_b_2<-GFP_plate_b_2/OD_plate_b_2
+plate_b_3<-GFP_plate_b_3/OD_plate_b_3
+plate_b_4<-GFP_plate_b_4/OD_plate_b_4
+plate_b_5<-GFP_plate_b_5/OD_plate_b_5
+
+plate_c_1<-GFP_plate_c_1/OD_plate_c_1
+plate_c_2<-GFP_plate_c_2/OD_plate_c_2
+plate_c_3<-GFP_plate_c_3/OD_plate_c_3
+plate_c_4<-GFP_plate_c_4/OD_plate_c_4
+plate_c_5<-GFP_plate_c_5/OD_plate_c_5
+
+
+#unir los platos que son del mismo tratamiento
+treat_a<-rbind(plate_c_1,plate_a_2,plate_a_3,plate_a_4,plate_a_5)
+treat_b<-rbind(plate_a_1,plate_b_2,plate_b_3,plate_b_4,plate_b_5)
+treat_c<-rbind(plate_c_1,plate_c_2,plate_c_3,plate_c_4,plate_c_5)
+
+#acomodar la lista CORRECTAMENTE de genes
+a<-c(); b<-c(); c<-c()
+for (z in 1:16) {
+  for (x in 1:12){
+    a<-strains[x+z*24-24,]
+    b<-strains[x+z*24-12,]
+    c<-rbind(c,a,b)
+  }
+}
+
+#adicionar nombre de genes
+strains<-c
+strains<-strains[,3]
+
+treat_a<-as.data.frame(treat_a)
+treat_b<-as.data.frame(treat_b)
+treat_c<-as.data.frame(treat_c)
+
+colnames(treat_a)<-strains
+colnames(treat_b)<-strains
+colnames(treat_c)<-strains
+
+#eliminar las bacterias que NO crecieron despues de transferencia
+#eliminar los pozos controles
+#eliminar genes
+eliminar<-c(384,382,380,378)
+treat_a<-select(treat_a,-eliminar)
+treat_b<-select(treat_b,-eliminar)
+treat_c<-select(treat_c,-eliminar)
+strains<-strains[-eliminar]
+
+#calcular el area bajo la curva para ordenar genes
+x<-nrow(treat_a)
+Tiempo<-c(1:x)
+z<-ncol(treat_a)
+
+w<-cbind(Tiempo,treat_a)
+x<-cbind(Tiempo,treat_b)
+y<-cbind(Tiempo,treat_c)
+
+
+require(pracma)
+a<-c(); b<-c(); c<-c()
+for (i in 1:z) {
+  a[i]<-trapz(w[,1],w[,1+i])
+  b[i]<-trapz(x[,1],x[,1+i])
+  c[i]<-trapz(y[,1],y[,1+i])
+}
+
+a<-as.data.frame(a/b)
+#b<-as.data.frame(b)
+c<-as.data.frame(c/b) 
+d<-as.data.frame(a/c)#se divide el area bajo la curva de memoria/NO memoria
+
+strains<-as.data.frame(strains)
+diff_exp<-as.data.frame(cbind(strains,d))
+a<-as.data.frame(cbind(strains,a))
+c<-as.data.frame(cbind(strains,c))
+
+a<-a[order(a$`a/b`),]
+strains<-as.vector(a[,1]) #este vector contiene el orden
+
+c<-c[order(c$`c/b`),]
+strains_1<-as.vector(c[,1]) #este vector contiene el orden
+
+#calcular logaritmo
+a$`a/b` <-log(a$`a/b`)
+a_genes<-as.vector(a[,1])
+a<-a[,2]
+a<-as.data.frame(a)
+rownames(a)<-a_genes
+a<-as.data.frame(t(a))
+a<-a[,strains]
+
+c$`c/b` <-log(c$`c/b`)
+r<-c
+c_genes<-as.vector(c[,1])
+c<-c[,2]
+c<-as.data.frame(c)
+rownames(c)<-c_genes
+c<-as.data.frame(t(c))
+c<-c[,strains_1]
+
+
+#cargar archivo de genes a descartar los genes que no tienen interacciones con TFs
+descartar<-read.csv(here("data","descartar_genes.csv"))
+
+n<-nrow(descartar)
+x<-c()
+for (i in 1:n) {
+  x[i]<-descartar[i,1]
+}
+
+a<-select(a,-x)
+c<-select(c,-x)
+strains_2<-as.data.frame(strains)
+rownames(strains_2)<-strains
+strains_2<-as.data.frame(t(strains_2))
+strains_2<-select(strains_2,-x)
